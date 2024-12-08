@@ -17,7 +17,7 @@ Comandos para seteo y levantamiento de DB y tablas en src/config/db.sql
 
 -- Creado en https://dbdiagram.io/d
 
-![Diagrama de la Base de Datos](./DB.svg)
+![Diagrama de la Base de Datos](./diagramaDB.svg)
 
 ### ---------
 
