@@ -33,3 +33,6 @@ coverage/
 
 # Archivos de configuración de ESLint
 .eslintcache
+
+# Postgres Data
+postgres-data/

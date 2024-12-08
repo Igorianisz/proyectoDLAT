@@ -11,6 +11,16 @@ npm run dev
 El servidor estará disponible en `http://localhost:3000` por default,
 Puerto configurable según .env PORT
 
+Comandos para seteo y levantamiento de DB y tablas en src/config/db.sql
+
+### DIAGRAMA DE DB
+
+-- Creado en https://dbdiagram.io/d
+
+![Diagrama de la Base de Datos](./DB.svg)
+
+### ---------
+
 # Evidencia de Tests - Express
 
 ---
