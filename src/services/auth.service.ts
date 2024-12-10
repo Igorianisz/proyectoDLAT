@@ -1,29 +1,60 @@
-import { userService } from "./user.service"
+import { userService } from './user.service';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken'
-
-const secretKey = process.env.SECRET_KEY_JTW || "ZZXXCCVV1"
+import { userModel } from '../models/user.model';
+import { EnumUserRole } from '../interfaces/role.interface';
+import { generateToken } from '../utils/auth/token.util';
+import { HttpError } from '../utils/error/httpError.utils';
 
 const loginWithPassword = async (email: string, password: string) => {
-
-    const usersList = await userService.getAllUsers()
-    const user = usersList.find((user) => user.email === email)
-    console.log(email, usersList)
+    const user = await userModel.getUserByEmail(email);
 
     if (!user) {
-        throw new Error(`Email or Password incorrect`)
+        throw new HttpError(`Email or Password incorrect`, 404);
     }
 
-    const isValidPassword = await bcrypt.compare(password, user.password)
+    const isValidPassword = await bcrypt.compare(password, user.password);
 
     if (!isValidPassword) {
-        throw new Error(`Email or Password incorrect`)
+        throw new HttpError(`Email or Password incorrect`, 404);
     }
 
-    // TODO: setear hora de expiración adecuada al proyecto
-    const token = jwt.sign({ id: user.id, email, rol: user.rol }, secretKey, { expiresIn: '4h' })
+    const token = generateToken(
+        user.id,
+        user.name,
+        user.last_name,
+        email,
+        user.role,
+        '4h',
+    );
 
-    return token
-}
+    return token;
+};
 
-export const authService = { loginWithPassword }
+const registerUserByPassword = async (
+    name: string,
+    last_name: string,
+    email: string,
+    password: string,
+    role: EnumUserRole,
+) => {
+    const newUser = await userService.createUserWithEmailPassword(
+        name,
+        last_name,
+        email,
+        password,
+        role,
+    );
+
+    const token = generateToken(
+        newUser.id,
+        newUser.name,
+        newUser.last_name,
+        email,
+        newUser.role,
+        '4h',
+    );
+
+    return token;
+};
+
+export const authService = { loginWithPassword, registerUserByPassword };

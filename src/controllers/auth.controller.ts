@@ -1,38 +1,43 @@
-import { Request, Response } from "express";
-import { authService } from "../services/auth.service";
-import { userService } from "../services/user.service";
+import { NextFunction, Request, Response } from 'express';
+import { authService } from '../services/auth.service';
+import { userService } from '../services/user.service';
+import { HttpError } from '../utils/error/httpError.utils';
 
-const loginByPassword = async (req: Request, res: Response) => {
+const loginByPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
-        const { email, password } = req.body
-        const token = await authService.loginWithPassword(email, password)
-        res.json({ token })
+        const { email, password } = req.body;
+        const token = await authService.loginWithPassword(email, password);
+        res.status(200).json({ token });
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-            return
-        }
-        res.status(500).json({ error: "Error de servidor" }); return
+        next(error);
     }
-}
+};
 
-const registerByPassword = async (req: Request, res: Response) => {
-
+const registerByPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
     try {
-        const { name, lastName, email, password, rol } = req.body
-        const newUsers = await userService.createUserWithEmailPassword(name, lastName, email, password, rol)
-        res.json({ newUsers })
+        const { name, last_name, email, password, role } = req.body;
+        const newUsers = await authService.registerUserByPassword(
+            name,
+            last_name,
+            email,
+            password,
+            role,
+        );
+        res.status(201).json({ newUsers });
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-            return
-        }
-        res.status(500).json({ error: "Error de servidor" }); return
+        next(error);
     }
-}
+};
 
 export const authController = {
-    loginByPassword, registerByPassword
-}
+    loginByPassword,
+    registerByPassword,
+};

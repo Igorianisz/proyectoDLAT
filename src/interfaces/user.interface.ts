@@ -1,8 +1,11 @@
+import { EnumUserRole } from './role.interface';
+
 export interface IUser {
-    id: string,
-    name: string,
-    lastName: string,
-    email: string,
-    password: string,
-    rol: string
+    id: string;
+    name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    created_date: Date;
+    role: EnumUserRole;
 }
