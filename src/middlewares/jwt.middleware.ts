@@ -25,6 +25,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const payload = verifyAccessToken(token);
+        req.id = payload.id;
         req.email = payload.email;
         req.role = payload.role;
         next();
