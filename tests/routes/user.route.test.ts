@@ -4,8 +4,6 @@ import request from 'supertest';
 import app from '../../src/app';
 import { EnumUserRole } from '../../src/interfaces/role.interface';
 
-import {} from '../../src';
-
 const mainPath = process.env.MAIN_PATH || '/api/v1';
 
 const mockUser = {
@@ -71,11 +69,11 @@ describe('GET /user', () => {
 describe('GET /user/:id', () => {
     const path = `${mainPath}/user/${id}`;
     const invalidUser = `${mainPath}/user/${22222222222222}`;
+    const noExistUser = `${mainPath}/user/123e4567-e89b-12d3-a456-426614174000`;
     it('should return user if valid toked', async () => {
         const response = await request(app).get(path);
         const { statusCode, body } = response;
 
-        console.log(body, statusCode, path);
         expect(body).toEqual(mockUser);
         expect(statusCode).toBe(200);
     });
@@ -87,11 +85,21 @@ describe('GET /user/:id', () => {
         const { statusCode } = response;
         expect(statusCode).toBe(404);
     });
-    it('Shouldnt return user if not valid / doesnt exist ID', async () => {
+    it('Shouldnt return user if not valid ', async () => {
         const response = await request(app).get(invalidUser);
         const { statusCode, body } = response;
 
-        console.log(statusCode, body);
+        expect(body.error).toEqual('User not found by id 22222222222222');
+
+        expect(statusCode).toBe(404);
+    });
+    it('Shouldnt return user if doesnt exist ', async () => {
+        const response = await request(app).get(noExistUser);
+        const { statusCode, body } = response;
+
+        expect(body.error).toEqual(
+            'User not found by id 123e4567-e89b-12d3-a456-426614174000',
+        );
 
         expect(statusCode).toBe(404);
     });
