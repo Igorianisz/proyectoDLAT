@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { EnumUserRole } from '../interfaces/role.interface';
 import { projectService } from '../services/project.service';
-import jwt from 'jsonwebtoken';
 import { getTokenPayload } from '../utils/auth/token.util';
 
 const getAllProject = async (
@@ -74,6 +73,58 @@ const deleteProject = async (
     }
 };
 
+const updateProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { name, description, start_date, end_date, status } = req.body;
+
+        const authHeader = req.headers['authorization'];
+
+        if (!authHeader) {
+            res.status(403).json({ error: `Bearer not found` });
+            return;
+        }
+
+        const token = authHeader?.split(' ')[1];
+
+        const { id } = getTokenPayload(token);
+        const { projectId } = req.params;
+
+        const projectById = await projectService.getProjectById(projectId);
+
+        if (id !== projectById.created_by && req.role !== EnumUserRole.Admin) {
+            res.status(403).json({
+                error: `Need to be owner or admin to update the project`,
+            });
+            return;
+        }
+
+        if (!projectById) {
+            res.status(404).json({
+                error: `No project found by id ${projectById}`,
+            });
+            return;
+        }
+        const newProject = await projectService.updateProject(
+            projectId,
+            {
+                name,
+                description,
+                start_date,
+                end_date,
+                status,
+            },
+            projectById,
+        );
+        res.status(201).json({ newProject });
+    } catch (error) {
+        next(error);
+    }
+};
+
 // TODO, UPDATE Y DELETE DE PROYECTOS
 
 export const projectController = {
@@ -81,4 +132,5 @@ export const projectController = {
     getProjectById,
     createProject,
     deleteProject,
+    updateProject,
 };

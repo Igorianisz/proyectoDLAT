@@ -8,4 +8,5 @@ export interface IUser {
     password: string;
     created_date: Date;
     role: EnumUserRole;
+    is_active: boolean;
 }

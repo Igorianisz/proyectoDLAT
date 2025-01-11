@@ -2,6 +2,12 @@
 
 ## Uso
 
+Para levantar la DB en docker
+
+```bash
+docker-compose up
+```
+
 Para iniciar el servidor, ejecuta:
 
 ```bash
@@ -13,6 +19,9 @@ Para ejecutar los test respectivos
 ```bash
 npm run test
 ```
+
+Para revisar la info Swagger, ir a
+`/api/v1/api-docs/`
 
 El servidor estará disponible en `http://localhost:3000` por default,
 Puerto configurable según .env PORT

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { userController } from '../controllers/user.controller';
 import { jwtMiddleware } from '../middlewares/jwt.middleware';
+import { adminMiddleware } from '../middlewares/admin.middleware';
 
 const router = Router();
 
@@ -11,11 +12,28 @@ router.get('/', jwtMiddleware.verifyToken, userController.getAllUsers);
 router.get('/:id', jwtMiddleware.verifyToken, userController.getUserById);
 
 // Ruta para creación de usuarios
-router.post('/', jwtMiddleware.verifyToken, userController.createUser);
+router.post(
+    '/',
+    jwtMiddleware.verifyToken,
+    adminMiddleware.verifyAdmin,
+    userController.createUser,
+);
 
 // Ruta para actualización de información de usuario
-router.patch('/:id', jwtMiddleware.verifyToken, userController.updateUser);
+router.post('/:id', jwtMiddleware.verifyToken, userController.updateUser);
 
-router.delete('/:id', jwtMiddleware.verifyToken, userController.deleteUser);
+router.delete(
+    '/:id',
+    jwtMiddleware.verifyToken,
+    adminMiddleware.verifyAdmin,
+    userController.deleteUser,
+);
+
+router.patch(
+    '/:id/activate',
+    jwtMiddleware.verifyToken,
+    adminMiddleware.verifyAdmin,
+    userController.toggleUserActivate,
+);
 
 export default router;
