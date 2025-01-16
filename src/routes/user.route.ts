@@ -20,7 +20,7 @@ router.post(
 );
 
 // Ruta para actualización de información de usuario
-router.post('/:id', jwtMiddleware.verifyToken, userController.updateUser);
+router.put('/:id', jwtMiddleware.verifyToken, userController.updateUser);
 
 router.delete(
     '/:id',
@@ -29,11 +29,11 @@ router.delete(
     userController.deleteUser,
 );
 
-router.patch(
-    '/:id/activate',
-    jwtMiddleware.verifyToken,
-    adminMiddleware.verifyAdmin,
-    userController.toggleUserActivate,
-);
+// router.post(
+//     '/:id',
+//     jwtMiddleware.verifyToken,
+//     adminMiddleware.verifyAdmin,
+//     userController.toggleUserActivate,
+// );
 
 export default router;

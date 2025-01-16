@@ -74,20 +74,20 @@ const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const toggleUserActivate = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-) => {
-    try {
-        const { isActive } = req.body;
-        const { id } = req.params;
-        const toogleUser = await userService.toggleUserActive(id, isActive);
-        res.status(201).json(toogleUser);
-    } catch (error) {
-        next(error);
-    }
-};
+// const toggleUserActivate = async (
+//     req: Request,
+//     res: Response,
+//     next: NextFunction,
+// ) => {
+//     try {
+//         const { isActive } = req.body;
+//         const { id } = req.params;
+//         const toogleUser = await userService.toggleUserActive(id, isActive);
+//         res.status(201).json(toogleUser);
+//     } catch (error) {
+//         next(error);
+//     }
+// };
 
 export const userController = {
     getAllUsers,
@@ -95,5 +95,5 @@ export const userController = {
     createUser,
     updateUser,
     deleteUser,
-    toggleUserActivate,
+    // toggleUserActivate,
 };

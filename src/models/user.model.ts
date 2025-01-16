@@ -1,126 +1,76 @@
 import { EnumUserRole } from '../interfaces/role.interface';
-import { pool } from '../config/database';
 import { IUser } from '../interfaces/user.interface';
+import {
+    AllowNull,
+    BelongsToMany,
+    Column,
+    CreatedAt,
+    DataType,
+    Default,
+    ForeignKey,
+    HasMany,
+    IsEmail,
+    IsUUID,
+    Model,
+    PrimaryKey,
+    Table,
+    Unique,
+    Validate,
+} from 'sequelize-typescript';
+import { Project } from './project.model';
+import { UserProject } from './userProject.model';
+import { UserTask } from './userTask.model';
+import { Task } from './task.model';
 
-const createUser = async (
-    name: string,
-    last_name: string,
-    email: string,
-    password: string,
-    role: EnumUserRole,
-) => {
-    const query = {
-        text: `
-        INSERT INTO USERS (name, last_name, email, password, role)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
-        `,
-        values: [name, last_name, email, password, role],
-    };
+@Table
+export class User extends Model<IUser> {
+    @PrimaryKey
+    @IsUUID(4)
+    @AllowNull(false)
+    @Default(DataType.UUIDV4)
+    @Column(DataType.UUID)
+    id!: string;
 
-    const { rows } = await pool.query(query);
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    name!: string;
 
-    console.log(rows);
-    return rows[0] as IUser;
-};
+    @AllowNull(false)
+    @Column(DataType.STRING)
+    last_name!: string;
 
-const readUsers = async () => {
-    const query = {
-        text: `
-        SELECT *
-        FROM USERS
-        `,
-    };
+    @AllowNull(false)
+    @IsEmail
+    @Unique
+    @Column(DataType.STRING)
+    email!: string;
 
-    const { rows } = await pool.query(query);
+    @AllowNull(false)
+    // @Validate({ is: /^[0-9a-f]{64}$/i })
+    @Column(DataType.STRING)
+    password!: string;
 
-    console.log(rows);
-    return rows as IUser[];
-};
+    @CreatedAt
+    @AllowNull(false)
+    @Default(DataType.NOW)
+    @Column(DataType.DATE)
+    created_date!: Date;
 
-const getUserByEmail = async (email: string) => {
-    console.log(email);
-    const query = {
-        text: `
-        SELECT * from USERS
-        WHERE email = $1
-        `,
-        values: [email],
-    };
+    @AllowNull(false)
+    @Default(EnumUserRole.Dev)
+    @Column(DataType.ENUM(...Object.values(EnumUserRole)))
+    role!: EnumUserRole;
 
-    const { rows } = await pool.query(query);
+    @Default(true)
+    @Column(DataType.BOOLEAN)
+    is_active!: boolean;
 
-    return rows[0] as IUser;
-};
+    @HasMany(() => Project, { foreignKey: 'created_by' })
+    projects!: Project[];
 
-const getUserById = async (id: string) => {
-    const query = {
-        text: `
-        SELECT * from USERS
-        WHERE id = $1
-        `,
-        values: [id],
-    };
+    @BelongsToMany(() => Project, () => UserProject, 'user_id')
+    userProjects!: UserProject[];
 
-    const { rows } = await pool.query(query);
-
-    return rows[0] as IUser;
-};
-
-const updateUserById = async (id: string, changes: string[]) => {
-    const query = {
-        text: `
-        UPDATE USERS
-        SET
-            name = COALESCE($1, name),
-            last_name = COALESCE($2, last_name),
-            email = COALESCE($3, email),
-            password = COALESCE($4, password),
-            role = COALESCE($5, role)
-        WHERE id = $6
-        RETURNING *;`,
-        values: changes,
-    };
-    const { rows } = await pool.query(query);
-
-    return rows[0] as IUser;
-};
-
-const deleteUserById = async (id: string) => {
-    const query = {
-        text: `
-        DELETE FROM USERS
-        WHERE id = $1 
-        RETURNING *`,
-        values: [id],
-    };
-
-    const { rows } = await pool.query(query);
-
-    return rows[0] as IUser;
-};
-
-const toggleActiveById = async (id: string, is_active: boolean) => {
-    const query = {
-        text: `
-        UPDATE USERS
-        SET
-            is_active = $2,
-        WHERE id = $1
-        RETURNING *;`,
-        values: [id, is_active],
-    };
-    const { rows } = await pool.query(query);
-
-    return rows[0] as IUser;
-};
-
-export const userModel = {
-    readUsers,
-    createUser,
-    getUserByEmail,
-    getUserById,
-    updateUserById,
-    deleteUserById,
-    toggleActiveById,
-};
+    @BelongsToMany(() => Task, () => UserTask, 'user_id')
+    userTasks!: UserTask[];
+}

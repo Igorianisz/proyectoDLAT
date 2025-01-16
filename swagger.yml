@@ -48,6 +48,12 @@ paths:
                                 password:
                                     type: string
                                     format: password
+                                role:
+                                    type: string
+                                    enum:
+                                        - Admin
+                                        - Dev
+                                    default: Admin
             responses:
                 201:
                     description: Created
@@ -114,7 +120,7 @@ paths:
                     description: OK
                 403:
                     description: Forbidden
-        post:
+        put:
             tags:
                 - user
             summary: Update user by ID
@@ -148,32 +154,32 @@ paths:
                     description: OK
                 403:
                     description: Forbidden
-        patch:
-            tags:
-                - user
-            summary: Activate or Deactivate user by ID
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                isActivate:
-                                    type: boolean
-            responses:
-                200:
-                    description: OK
-                403:
-                    description: Forbidden
+        # # post:
+        # #     tags:
+        # #         - user
+        # #     summary: Activate or Deactivate user by ID
+        # #     security:
+        # #         - bearerAuth: []
+        # #     parameters:
+        # #         - name: id
+        # #           in: path
+        # #           required: true
+        # #           schema:
+        # #               type: string
+        # #     requestBody:
+        # #         required: true
+        # #         content:
+        # #             application/json:
+        # #                 schema:
+        # #                     type: object
+        # #                     properties:
+        # #                         is_active:
+        # #                             type: boolean
+        #     responses:
+        #         200:
+        #             description: OK
+        #         403:
+        #             description: Forbidden
         delete:
             tags:
                 - user

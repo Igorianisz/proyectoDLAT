@@ -6,7 +6,7 @@ services:
     image: postgres:15 # Usa PostgreSQL versión 15
 
     # Nombre del contenedor
-    container_name: pg-DLATM # Nombre del contenedor
+    container_name: pg-igor-platam # Nombre del contenedor
 
     # Variables de entorno para configurar la base de datos
     environment:

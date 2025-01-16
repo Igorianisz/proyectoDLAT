@@ -108,7 +108,7 @@ const updateProject = async (
             });
             return;
         }
-        const newProject = await projectService.updateProject(
+        const updatedProject = await projectService.updateProject(
             projectId,
             {
                 name,
@@ -119,7 +119,7 @@ const updateProject = async (
             },
             projectById,
         );
-        res.status(201).json({ newProject });
+        res.status(201).json({ updatedProject });
     } catch (error) {
         next(error);
     }
