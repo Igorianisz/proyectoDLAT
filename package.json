@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "tsx watch --include ./swagger.yml src/index.ts",
+        "db:up": "docker compose up -d",
         "build": "pkgroll",
         "start": "node dist/index.js",
         "test": "vitest",
@@ -35,6 +36,7 @@
         "bcrypt": "^5.1.1",
         "dotenv": "^16.4.5",
         "express": "^4.21.1",
+        "joi": "^17.13.3",
         "jsonwebtoken": "^9.0.2",
         "pg": "^8.13.1",
         "sequelize-typescript": "^2.1.6",

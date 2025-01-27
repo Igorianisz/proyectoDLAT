@@ -36,18 +36,10 @@ const createProject = async (
     next: NextFunction,
 ) => {
     try {
-        const authHeader = req.headers['authorization'];
-
-        if (!authHeader) {
-            res.status(403).json({ error: `Bearer not found` });
-            return;
-        }
-
-        const token = authHeader?.split(' ')[1];
-
-        const { id } = getTokenPayload(token);
+        // const { id } = getTokenPayload(token);
         const { name, description } = req.body;
-        console.log(id, name, description, req.body);
+        const { id } = req;
+
         const newProject = await projectService.createProject(
             id,
             name,
@@ -80,20 +72,18 @@ const updateProject = async (
 ) => {
     try {
         const { name, description, start_date, end_date, status } = req.body;
+        const { id } = req;
 
-        const authHeader = req.headers['authorization'];
-
-        if (!authHeader) {
-            res.status(403).json({ error: `Bearer not found` });
-            return;
-        }
-
-        const token = authHeader?.split(' ')[1];
-
-        const { id } = getTokenPayload(token);
         const { projectId } = req.params;
 
         const projectById = await projectService.getProjectById(projectId);
+
+        if (!projectById) {
+            res.status(404).json({
+                error: `No project found by id ${projectById}`,
+            });
+            return;
+        }
 
         if (id !== projectById.created_by && req.role !== EnumUserRole.Admin) {
             res.status(403).json({
@@ -102,12 +92,6 @@ const updateProject = async (
             return;
         }
 
-        if (!projectById) {
-            res.status(404).json({
-                error: `No project found by id ${projectById}`,
-            });
-            return;
-        }
         const updatedProject = await projectService.updateProject(
             projectId,
             {

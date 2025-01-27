@@ -1,5 +1,8 @@
 # Proyecto DesafioLatam - Express
 
+> -   Se agrego validacion del req.body con joi
+> -   borrado de import innecesarios
+
 ## Uso
 
 Para levantar la DB en docker

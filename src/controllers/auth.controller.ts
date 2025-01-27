@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService } from '../services/auth.service';
-import { userService } from '../services/user.service';
-import { HttpError } from '../utils/error/httpError.utils';
 
 const loginByPassword = async (
     req: Request,

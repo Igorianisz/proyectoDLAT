@@ -5,9 +5,9 @@ import { verifyAccessToken } from '../utils/auth/token.util';
 
 declare module 'express-serve-static-core' {
     interface Request {
-        id?: string;
-        name?: string;
-        last_name?: string;
+        id: string;
+        // name?: string;
+        // last_name?: string;
         email?: string;
         role?: EnumUserRole;
     }
