@@ -3,6 +3,11 @@
 > -   Se agrego validacion del req.body con joi
 > -   borrado de import innecesarios
 
+TODO:
+
+-   Pasar encriptación a la DB
+-   seteo login con microsoft/google/otros auths
+
 ## Uso
 
 Para levantar la DB en docker

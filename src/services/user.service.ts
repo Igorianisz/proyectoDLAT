@@ -41,8 +41,6 @@ const createUserWithEmailPassword = async (
     password: string,
     role: EnumUserRole = EnumUserRole.Dev,
 ) => {
-    // validaciones de nombre/apellido/ y otros es de front
-
     // Encriptación de la contraseña
     const salt = await bcrypt.genSalt(10);
     const passwordHashed = await bcrypt.hash(password, salt);
