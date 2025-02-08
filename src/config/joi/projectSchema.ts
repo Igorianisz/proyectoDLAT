@@ -31,15 +31,29 @@ export const updateProjectSchema = Joi.object({
 });
 
 export const getProjectByIdSchema = Joi.object({
-    id: Joi.string().uuid().required().messages({
+    projectId: Joi.string().uuid().required().messages({
         'any.required': 'Project ID is required',
         'string.uuid': 'Project ID must be a valid UUID',
     }),
 });
 
 export const deleteProjectSchema = Joi.object({
-    id: Joi.string().uuid().required().messages({
+    projectId: Joi.string().uuid().required().messages({
         'any.required': 'Project ID is required',
         'string.uuid': 'Project ID must be a valid UUID',
+    }),
+});
+
+export const assingUserToProjectSchema = Joi.object({
+    userId: Joi.string().uuid().required().messages({
+        'any.required': 'User ID is required',
+        'string.uuid': 'User ID must be a valid UUID',
+    }),
+});
+
+export const removeUserToProjectSchema = Joi.object({
+    userId: Joi.string().uuid().required().messages({
+        'any.required': 'User ID is required',
+        'string.uuid': 'User ID must be a valid UUID',
     }),
 });

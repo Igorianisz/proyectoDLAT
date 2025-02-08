@@ -3,15 +3,46 @@ import { uuidValidator } from '../utils/error/uuidValidator.utils';
 import { IProject, UpdateProjectParams } from '../interfaces/project.interface';
 import { EnumStatus } from '../interfaces/status.interface';
 import { Project } from '../models/project.model';
+import { UserProject } from '../models/userProject.model';
+import { User } from '../models/user.model';
 
 const getAllProjects = async () => {
-    const project = await Project.findAll();
+    const project = await Project.findAll({
+        include: [
+            {
+                model: User,
+                as: 'users',
+                attributes: ['id', 'name', 'last_name', 'email', 'role'],
+                through: { attributes: [] },
+            },
+            {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'name', 'last_name', 'email', 'role'],
+            },
+        ],
+    });
     return project;
 };
 
 const getProjectById = async (id: string) => {
     uuidValidator('project', id);
-    const projectById = await Project.findOne({ where: { id } });
+    const projectById = await Project.findOne({
+        where: { id },
+        include: [
+            {
+                model: User,
+                as: 'users',
+                attributes: ['id', 'name', 'last_name', 'email', 'role'],
+                through: { attributes: [] },
+            },
+            {
+                model: User,
+                as: 'user',
+                attributes: ['id', 'name', 'last_name', 'email', 'role'],
+            },
+        ],
+    });
 
     if (!projectById) {
         throw new HttpError(`Project not found by id ${id}`, 404);
@@ -70,10 +101,28 @@ const updateProject = async (
     return project[1][0];
 };
 
+const assingUserToProject = async (userId: string, projectId: string) => {
+    const project = await UserProject.create({
+        user_id: userId,
+        project_id: projectId,
+    });
+
+    return project;
+};
+
+const removeUserFromProject = async (userId: string, projectId: string) => {
+    const deleteUserFromProject = await UserProject.destroy({
+        where: { user_id: userId, project_id: projectId },
+    });
+    return deleteUserFromProject;
+};
+
 export const projectService = {
     getAllProjects,
     getProjectById,
     createProject,
     deleteProject,
     updateProject,
+    assingUserToProject,
+    removeUserFromProject,
 };
