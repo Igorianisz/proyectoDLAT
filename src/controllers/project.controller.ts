@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { EnumUserRole } from '../interfaces/role.interface';
 import { projectService } from '../services/project.service';
 import { getTokenPayload } from '../utils/auth/token.util';
+import { userService } from '../services/user.service';
 
 const getAllProject = async (
     req: Request,
@@ -22,8 +23,8 @@ const getProjectById = async (
     next: NextFunction,
 ) => {
     try {
-        const { id } = req.params;
-        const project = await projectService.getProjectById(id);
+        const { projectId } = req.params;
+        const project = await projectService.getProjectById(projectId);
         res.status(200).json(project);
     } catch (error) {
         next(error);
@@ -36,7 +37,6 @@ const createProject = async (
     next: NextFunction,
 ) => {
     try {
-        // const { id } = getTokenPayload(token);
         const { name, description } = req.body;
         const { id } = req;
 
@@ -57,7 +57,24 @@ const deleteProject = async (
     next: NextFunction,
 ) => {
     try {
-        const { id } = req.params;
+        const { projectId } = req.params;
+        const { id } = req;
+
+        const projectById = await projectService.getProjectById(projectId);
+
+        if (!projectById) {
+            res.status(404).json({
+                error: `No project found by id ${projectById}`,
+            });
+            return;
+        }
+        if (id !== projectById.created_by && req.role !== EnumUserRole.Admin) {
+            res.status(403).json({
+                error: `Need to be owner or admin to delete the project`,
+            });
+            return;
+        }
+
         const deletedProject = await projectService.deleteProject(id);
         res.status(200).json(deletedProject);
     } catch (error) {
@@ -109,7 +126,90 @@ const updateProject = async (
     }
 };
 
-// TODO, UPDATE Y DELETE DE PROYECTOS
+const assingUserToProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { userId } = req.body;
+        const { id } = req;
+        const { projectId } = req.params;
+
+        const projectById = await projectService.getProjectById(projectId);
+        const userById = await userService.getUserById(userId);
+
+        if (!projectById) {
+            res.status(404).json({
+                error: `No project found by id ${projectById}`,
+            });
+            return;
+        }
+
+        if (!userById) {
+            res.status(404).json({
+                error: `No user found by id ${userById}`,
+            });
+            return;
+        }
+
+        if (id !== projectById.created_by && req.role !== EnumUserRole.Admin) {
+            res.status(403).json({
+                error: `Need to be owner or admin to update the project`,
+            });
+            return;
+        }
+        const newProject = await projectService.assingUserToProject(
+            userId,
+            projectId,
+        );
+        res.status(201).json({ newProject });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const removeUserFromProject = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { userId } = req.body;
+        const { id } = req;
+        const { projectId } = req.params;
+
+        const projectById = await projectService.getProjectById(projectId);
+        const userById = await userService.getUserById(userId);
+
+        if (!projectById) {
+            res.status(404).json({
+                error: `No project found by id ${projectById}`,
+            });
+            return;
+        }
+
+        if (!userById) {
+            res.status(404).json({
+                error: `No user found by id ${userById}`,
+            });
+            return;
+        }
+        if (id !== projectById.created_by && req.role !== EnumUserRole.Admin) {
+            res.status(403).json({
+                error: `Need to be owner or admin to update the project`,
+            });
+            return;
+        }
+        const removeFromProject = await projectService.removeUserFromProject(
+            userId,
+            projectId,
+        );
+        res.status(201).json({ removeFromProject });
+    } catch (error) {
+        next(error);
+    }
+};
 
 export const projectController = {
     getAllProject,
@@ -117,4 +217,6 @@ export const projectController = {
     createProject,
     deleteProject,
     updateProject,
+    assingUserToProject,
+    removeUserFromProject,
 };

@@ -10,13 +10,16 @@ services:
 
     # Variables de entorno para configurar la base de datos
     environment:
-      POSTGRES_USER: postgres # Usuario predeterminado de la base de datos
-      POSTGRES_PASSWORD: root # Contraseña del usuario
-      POSTGRES_DB: dbtest # Nombre de la base de datos que se creará
+      POSTGRES_USER: ${DB_NAME} # Usuario predeterminado de la base de datos
+      POSTGRES_PASSWORD: ${PASSWORD_DB} # Contraseña del usuario
+      POSTGRES_DB: ${USER_DB} # Nombre de la base de datos que se creará
 
     # Puertos: mapea el puerto 5432 (dentro del contenedor) al 5434 (en tu máquina host)
     ports:
       - "5434:5432" # host:contenedor
+
+    env_file:
+      - ".env"
 
     # Volúmenes: mapea una carpeta local a la ruta de datos de PostgreSQL en el contenedor
     volumes:

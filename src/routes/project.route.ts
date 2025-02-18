@@ -7,6 +7,8 @@ import {
     createProjectSchema,
     getProjectByIdSchema,
     updateProjectSchema,
+    assingUserToProjectSchema,
+    removeUserToProjectSchema,
 } from '../config/joi/projectSchema';
 
 const router = Router();
@@ -16,7 +18,7 @@ router.get('/', jwtMiddleware.verifyToken, projectController.getAllProject);
 
 // Ruta para obtener info de un proyecto por su ID uuid
 router.get(
-    '/:id',
+    '/:projectId',
     jwtMiddleware.verifyToken,
     validateBody.validateReqBody(getProjectByIdSchema),
     projectController.getProjectById,
@@ -30,13 +32,15 @@ router.post(
     projectController.createProject,
 );
 
+// Ruta para eliminacion de proyectos
 router.delete(
-    '/:id',
+    '/:projectId',
     jwtMiddleware.verifyToken,
     validateBody.validateReqBody(deleteProjectSchema),
     projectController.deleteProject,
 );
 
+// Ruta para actualizacion de proyectos
 router.post(
     '/update/:projectId',
     jwtMiddleware.verifyToken,
@@ -44,6 +48,18 @@ router.post(
     projectController.updateProject,
 );
 
-// TODO, UPDATE Y DELETE DE PROYECTOS
+router.post(
+    '/assign/:projectId',
+    jwtMiddleware.verifyToken,
+    validateBody.validateReqBody(assingUserToProjectSchema),
+    projectController.assingUserToProject,
+);
+
+router.delete(
+    '/remove/:projectId',
+    jwtMiddleware.verifyToken,
+    validateBody.validateReqBody(removeUserToProjectSchema),
+    projectController.removeUserFromProject,
+);
 
 export default router;
