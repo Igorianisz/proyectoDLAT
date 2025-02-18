@@ -1,81 +1,85 @@
+import { NextFunction, Request, Response } from 'express';
+import { userService } from '../services/user.service';
+import { EnumUserRole } from '../interfaces/role.interface';
 
-import { Request, Response } from "express"
-import { userService } from "../services/user.service";
-import { EnumUserRole } from "../interfaces/rol.interface";
-
-
-const getAllUsers = async (req: Request, res: Response) => {
+const getAllUsers = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const userList = await userService.getAllUsers()
-        res.json(userList)
+        const userList = await userService.getAllUsers();
+        res.status(200).json(userList);
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-            return
-        }
-        res.status(500).json({ error: "Error de servidor" });
-        return
+        next(error);
     }
-}
+};
 
-const getUserById = async (req: Request, res: Response) => {
+const getUserById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req.params
-        const user = await userService.getUserById(id)
-        res.json(user);
+        const { id } = req.params;
+        const user = await userService.getUserById(id);
+        res.status(200).json(user);
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-            return
-        }
-        res.status(500).json({ error: "Error de servidor" }); return
+        next(error);
     }
-}
+};
 
-const createUser = async (req: Request, res: Response) => {
+const createUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, lastName, email, password, rol } = req.body
-        const newUsers = await userService.createUserWithEmailPassword(name, lastName, email, password, rol)
-        res.json({ newUsers })
-
+        const { name, last_name, email, password, role } = req.body;
+        const newUsers = await userService.createUserWithEmailPassword(
+            name,
+            last_name,
+            email,
+            password,
+            role,
+        );
+        res.status(201).json({ newUsers });
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
+        next(error);
+    }
+};
+
+const updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, last_name, email, password, role } = req.body;
+        const { id } = req.params;
+        const user = await userService.getUserById(id);
+
+        if (req.email !== user.email && req.role !== EnumUserRole.Admin) {
+            res.status(403).json({
+                error: 'Unauthorized: Only the user or an admin can update this information',
+            });
             return;
         }
-        res.status(500).json({ error: "Error de servidor" });
+        const newUsers = await userService.updateUserData(
+            id,
+            name,
+            last_name,
+            email,
+            password,
+            role,
+        );
+        res.status(200).json({ newUsers });
         return;
-    }
-}
-
-const updateUser = async (req: Request, res: Response) => {
-    try {
-        const { name, lastName, email, password, rol } = req.body
-        const { id } = req.params
-        const user = await userService.getUserById(id)
-
-        if (req.email !== user.email && req.rol !== EnumUserRole.Admin) {
-            res.status(403).json({ error: "Unauthorized: Only the user or an admin can update this information" });
-            return;
-        }
-        const newUsers = await userService.updateUserData(id, name, lastName, email, password, rol)
-        res.json({ newUsers })
-        return;
-
     } catch (error) {
-        console.log(error);
-        if (error instanceof Error) {
-            res.status(500).json({ error: error.message });
-            return;
-        }
-        res.status(500).json({ error: "Error de servidor" });
-        return;
+        next(error);
     }
-}
+};
+
+const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const deletedUser = await userService.deleteUser(id);
+        res.status(201).json(deletedUser);
+    } catch (error) {
+        const { id } = req.params;
+        console.log(543543435, id, id);
+        next(error);
+    }
+};
 
 export const userController = {
-    getAllUsers, getUserById, createUser, updateUser
-}
+    getAllUsers,
+    getUserById,
+    createUser,
+    updateUser,
+    deleteUser,
+};

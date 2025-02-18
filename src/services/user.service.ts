@@ -1,9 +1,10 @@
-import { IUser } from "../interfaces/user.interface";
-import { userModel } from "../models/user.model";
-import { v6 } from "uuid";
+import { userModel } from '../models/user.model';
 
-import bcrypt from "bcrypt";
-import { EnumUserRole } from "../interfaces/rol.interface";
+import bcrypt from 'bcrypt';
+import { EnumUserRole } from '../interfaces/role.interface';
+import { HttpError } from '../utils/error/httpError.utils';
+import { validate } from 'uuid';
+import { uuidValidator } from '../utils/error/uuidValidator.utils';
 
 const getAllUsers = async () => {
     const users = await userModel.readUsers();
@@ -11,85 +12,88 @@ const getAllUsers = async () => {
 };
 
 const getUserById = async (userId: string) => {
-    const users = await getAllUsers();
-    const userById = users.find(({ id }) => id === userId);
+    uuidValidator('User', userId);
+    const userById = await userModel.getUserById(userId);
+    console.log(userById);
     if (!userById) {
-        throw new Error(`User not found by id ${userId}`);
+        throw new HttpError(`User not found by id ${userId}`, 404);
     }
     return userById;
 };
 
+const getUserByEmail = async (userEmail: string) => {
+    const userByEmail = await userModel.getUserByEmail(userEmail);
+    if (!userByEmail) {
+        throw new HttpError(`User not found by email ${userByEmail}`, 404);
+    }
+    return userByEmail;
+};
+
 // TODO:  crear login con cuentas de google y microsoft, agregar otros a futuro como facebook quizas
-const createUserByGoogle = async () => { };
-const createUserByMicrosoft = async () => { };
+const createUserByGoogle = async () => {};
+const createUserByMicrosoft = async () => {};
 
 const createUserWithEmailPassword = async (
     name: string,
-    lastName: string,
+    last_name: string,
     email: string,
     password: string,
-    rol: EnumUserRole = EnumUserRole.Guest
+    role: EnumUserRole = EnumUserRole.Dev,
 ) => {
     // validaciones de nombre/apellido/ y otros es de front
 
-    const users = await getAllUsers();
-    const findUserByEmail = users.find((user) => user.email === email);
+    const findUserByEmail = await userModel.getUserByEmail(email);
 
     if (findUserByEmail) {
-        throw new Error(`The current email ${email} is already on use.`);
+        throw new HttpError(
+            `The current email ${email} is already on use.`,
+            409,
+        );
     }
 
     // Encriptación de la contraseña
     const salt = await bcrypt.genSalt(10);
     const passwordHashed = await bcrypt.hash(password, salt);
 
-    const newUser: IUser = {
-        id: v6(),
+    const newUser = await userModel.createUser(
         name,
-        lastName,
+        last_name,
         email,
-        password: passwordHashed,
-        rol,
-    };
-
-    users.push(newUser);
-
-    console.log(
-        `Created user ${name} ${lastName} with email ${email} and rol ${rol}`
+        passwordHashed,
+        role,
     );
-    await userModel.writeUsers(users);
+    return newUser;
 };
 
 const updateUserData = async (
     id: string,
     name?: string,
-    lastName?: string,
+    last_name?: string,
     email?: string,
     password?: string,
-    rol?: EnumUserRole
+    role?: EnumUserRole,
 ) => {
-    // validaciones a nivel de formulario
-    const users = await getAllUsers();
+    uuidValidator('User', id);
+    const findUserById = await getUserById(id);
 
-    //Revisa y obtiene index del usuario en "db", para posteriormente tener la referencia y actualizar su data
-    const userIndex = users.findIndex((user) => user.id === id);
-
-    if (userIndex === -1) {
-        throw new Error(`No user found`);
+    if (!findUserById) {
+        throw new HttpError(`No user found`, 404);
     }
 
-    const findUserById = users[userIndex];
     let updatedUser = { ...findUserById };
 
     // Lista de if para actualización si es que se entrego el prop en el post inicial.
     // ya que solo el ID es obligatorio
     if (name) updatedUser.name = name;
-    if (lastName) updatedUser.lastName = lastName;
-    if (rol) updatedUser.rol = rol;
+    if (last_name) updatedUser.last_name = last_name;
+    if (role) updatedUser.role = role;
     if (email) {
-        const getUserByEmail = users.find((user) => user.email === email);
+        const getUserByEmail = await userModel.getUserByEmail(email);
         if (getUserByEmail) {
-            throw new Error(`The current email ${email} is already on use.`);
+            throw new HttpError(
+                `The current email ${email} is already on use.`,
+                409,
+            );
         } else {
             updatedUser.email = email;
         }
@@ -97,26 +101,41 @@ const updateUserData = async (
     if (password) {
         const salt = await bcrypt.genSalt(10);
         const passwordHashed = await bcrypt.hash(password, salt);
-        const samePassword = await bcrypt.compare(password, findUserById.password);
+        const samePassword = await bcrypt.compare(
+            password,
+            findUserById.password,
+        );
         if (samePassword) {
-            throw new Error(`You can't pick the same password`);
+            throw new HttpError(`You can't pick the same password`, 400);
         } else {
             updatedUser.password = passwordHashed;
         }
     }
 
-    users[userIndex] = updatedUser;
-
-    await userModel.writeUsers(users);
-
-    console.log(`Created user ${name} ${lastName} with email ${email}`);
-
-    await userModel.writeUsers(users);
+    await userModel.updateUserById(id, [
+        updatedUser.name,
+        updatedUser.last_name,
+        updatedUser.email,
+        updatedUser.password,
+        updatedUser.role,
+    ]);
 };
 
+const deleteUser = async (id: string) => {
+    uuidValidator('User', id);
+
+    const findUserById = await getUserById(id);
+
+    if (!findUserById) {
+        throw new HttpError(`No user found, can't delete`, 404);
+    }
+    await userModel.deleteUserById(id);
+};
 export const userService = {
     getAllUsers,
     getUserById,
     createUserWithEmailPassword,
     updateUserData,
+    getUserByEmail,
+    deleteUser,
 };
