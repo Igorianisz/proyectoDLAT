@@ -15,3 +15,11 @@ export interface IProjectUser {
     project_id: string;
     user_id: string;
 }
+
+export interface UpdateProjectParams {
+    name?: string;
+    description?: string;
+    start_date?: Date;
+    end_date?: Date;
+    status?: string;
+}

@@ -100,6 +100,21 @@ const deleteUserById = async (id: string) => {
     return rows[0] as IUser;
 };
 
+const toggleActiveById = async (id: string, is_active: boolean) => {
+    const query = {
+        text: `
+        UPDATE USERS
+        SET
+            is_active = $2,
+        WHERE id = $1
+        RETURNING *;`,
+        values: [id, is_active],
+    };
+    const { rows } = await pool.query(query);
+
+    return rows[0] as IUser;
+};
+
 export const userModel = {
     readUsers,
     createUser,
@@ -107,4 +122,5 @@ export const userModel = {
     getUserById,
     updateUserById,
     deleteUserById,
+    toggleActiveById,
 };

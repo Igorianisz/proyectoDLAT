@@ -67,11 +67,24 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const deletedUser = await userService.deleteUser(id);
+        const deletedUser = await userService.updateUserData(id);
         res.status(201).json(deletedUser);
     } catch (error) {
+        next(error);
+    }
+};
+
+const toggleUserActivate = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const { isActive } = req.body;
         const { id } = req.params;
-        console.log(543543435, id, id);
+        const toogleUser = await userService.toggleUserActive(id, isActive);
+        res.status(201).json(toogleUser);
+    } catch (error) {
         next(error);
     }
 };
@@ -82,4 +95,5 @@ export const userController = {
     createUser,
     updateUser,
     deleteUser,
+    toggleUserActivate,
 };

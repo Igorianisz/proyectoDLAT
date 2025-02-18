@@ -131,6 +131,18 @@ const deleteUser = async (id: string) => {
     }
     await userModel.deleteUserById(id);
 };
+
+const toggleUserActive = async (id: string, is_active: boolean) => {
+    uuidValidator('User', id);
+    const findUserById = await getUserById(id);
+
+    if (!findUserById) {
+        throw new HttpError(`No user found`, 404);
+    }
+
+    await userModel.toggleActiveById(id, is_active);
+};
+
 export const userService = {
     getAllUsers,
     getUserById,
@@ -138,4 +150,5 @@ export const userService = {
     updateUserData,
     getUserByEmail,
     deleteUser,
+    toggleUserActive,
 };

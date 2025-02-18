@@ -1,7 +1,7 @@
 import { EnumUserRole } from '../../interfaces/role.interface';
 import jwt from 'jsonwebtoken';
 
-const secretKey = process.env.SECRET_KEY_JTW || 'ZZXXCCVV1';
+const secretKey = process.env.SECRET_KEY_JWT || 'AXXXAf/14ACX';
 
 export const generateToken = (
     id: string,

@@ -114,7 +114,7 @@ paths:
                     description: OK
                 403:
                     description: Forbidden
-        patch:
+        post:
             tags:
                 - user
             summary: Update user by ID
@@ -148,6 +148,32 @@ paths:
                     description: OK
                 403:
                     description: Forbidden
+        patch:
+            tags:
+                - user
+            summary: Activate or Deactivate user by ID
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                isActivate:
+                                    type: boolean
+            responses:
+                200:
+                    description: OK
+                403:
+                    description: Forbidden
         delete:
             tags:
                 - user
@@ -172,7 +198,7 @@ paths:
     /project:
         get:
             tags:
-                - project
+                - projects
             summary: Get all projects
             security:
                 - bearerAuth: []
@@ -183,7 +209,7 @@ paths:
                     description: Forbidden
         post:
             tags:
-                - project
+                - projects
             summary: Create a new project
             security:
                 - bearerAuth: []
@@ -203,12 +229,11 @@ paths:
                     description: Created
                 403:
                     description: Forbidden
-
     /project/{id}:
         get:
             tags:
-                - project
-            summary: Get project by ID
+                - projects
+            summary: Get projects by ID
             security:
                 - bearerAuth: []
             parameters:
@@ -224,8 +249,8 @@ paths:
                     description: Forbidden
         delete:
             tags:
-                - project
-            summary: Delete project by ID
+                - projects
+            summary: Delete projects by ID
             security:
                 - bearerAuth: []
             parameters:
@@ -243,7 +268,49 @@ paths:
                     description: Forbidden
                 404:
                     description: Not Found
-
+    /project/update/{id}:
+        post:
+            tags:
+                - projects
+            summary: Update project by ID
+            security:
+                - bearerAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                description:
+                                    type: string
+                                start_date:
+                                    type: string
+                                    format: date-time
+                                end_date:
+                                    type: string
+                                    format: date-time
+                                status:
+                                    type: string
+                                    enum:
+                                        - done
+                                        - inProgress
+                                        - delayed
+                                        - notStarted
+                                        - cancelled
+            responses:
+                200:
+                    description: OK
+                403:
+                    description: Forbidden
 components:
     securitySchemes:
         bearerAuth:

@@ -19,6 +19,12 @@ router.delete(
     projectController.deleteProject,
 );
 
+router.post(
+    '/update/:projectId',
+    jwtMiddleware.verifyToken,
+    projectController.updateProject,
+);
+
 // TODO, UPDATE Y DELETE DE PROYECTOS
 
 export default router;

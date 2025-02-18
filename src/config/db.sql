@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS user_task;
 
 DROP TABLE IF EXISTS task;
 
-DROP TABLE IF EXISTS project;
+DROP TABLE IF EXISTS projects;
 
 DROP TABLE IF EXISTS users;
 
@@ -50,11 +50,12 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(200) NOT NULL,
     created_date DATE DEFAULT NOW(),
-    role enum_user_role NOT NULL
+    role enum_user_role NOT NULL,
+    is_active BOOLEAN DEFAULT true
 );
 
 -- Creación de tabla de proyectos, esta
-CREATE TABLE project (
+CREATE TABLE projects (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
     name VARCHAR(100) NOT NULL,
     description TEXT NOT NULL,
@@ -62,7 +63,8 @@ CREATE TABLE project (
     start_date DATE,
     end_date DATE,
     status enum_status DEFAULT 'notStarted',
-    created_by UUID NOT NULL
+    created_by UUID NOT NULL,
+    FOREIGN KEY (created_by) REFERENCES users (id)
 );
 
 -- Creacion de tabla de tareas
@@ -76,14 +78,14 @@ CREATE TABLE task (
     status enum_status DEFAULT 'notStarted',
     project_id UUID NOT NULL,
     created_by UUID NOT NULL,
-    FOREIGN KEY (project_id) REFERENCES project (id)
+    FOREIGN KEY (project_id) REFERENCES projects (id)
 );
 --Tabla de relaciones de los usuarios que estan asignados a un proyecto
 CREATE TABLE user_project (
     user_id UUID NOT NULL,
     project_id UUID NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id),
-    FOREIGN KEY (project_id) REFERENCES project (id)
+    FOREIGN KEY (project_id) REFERENCES projects (id)
 );
 -- Tabla de relaciones de los usuarios asignados a una tarea
 CREATE TABLE user_task (

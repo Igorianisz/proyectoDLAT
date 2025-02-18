@@ -1,3 +1,4 @@
 PORT = 3005
 SECRET_KEY_JWT= "AXXXAf/14ACX"
 DATABASE_URL = "postgresql://postgres:root@localhost:5434/dbtest"
+MAIN_PATH = "/api/v1"
