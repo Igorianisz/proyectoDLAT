@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { EnumUserRole } from '../interfaces/role.interface';
 import { projectService } from '../services/project.service';
-import { getTokenPayload } from '../utils/auth/token.util';
 import { userService } from '../services/user.service';
 
 const getAllProject = async (

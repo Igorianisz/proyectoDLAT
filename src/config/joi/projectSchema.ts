@@ -24,7 +24,6 @@ export const updateProjectSchema = Joi.object({
     status: Joi.string()
         .optional()
         .valid(...statusValues)
-        .optional()
         .messages({
             'any.only': 'Status must be a valid one',
         }),
