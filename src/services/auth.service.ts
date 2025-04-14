@@ -1,12 +1,12 @@
 import { userService } from './user.service';
 import bcrypt from 'bcrypt';
-import { userModel } from '../models/user.model';
+import { User } from '../models/user.model';
 import { EnumUserRole } from '../interfaces/role.interface';
 import { generateToken } from '../utils/auth/token.util';
 import { HttpError } from '../utils/error/httpError.utils';
 
 const loginWithPassword = async (email: string, password: string) => {
-    const user = await userModel.getUserByEmail(email);
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
         throw new HttpError(`Email or Password incorrect`, 404);
@@ -24,7 +24,6 @@ const loginWithPassword = async (email: string, password: string) => {
         user.last_name,
         email,
         user.role,
-        '4h',
     );
 
     return token;
@@ -51,7 +50,6 @@ const registerUserByPassword = async (
         newUser.last_name,
         email,
         newUser.role,
-        '4h',
     );
 
     return token;

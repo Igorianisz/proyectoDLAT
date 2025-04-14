@@ -8,6 +8,8 @@ import { loggerMiddleware } from './middlewares/logger.middleware';
 
 import swaggerSpec from './config/swagger';
 import swaggerUi from 'swagger-ui-express';
+import morgan from 'morgan';
+import cors from 'cors';
 
 // carga de variables de entorno, si no usara las seteadas por default en codigo
 dotenv.config();
@@ -16,11 +18,16 @@ const path = process.env.MAIN_PATH || '/api/v1';
 
 const app = express();
 
-// Setup Swagger documentation
-app.use(`${path}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(loggerMiddleware);
+app.use(cors());
+app.use(express.static('public')); // servir archivos estáticos
+
+// app.use(express.static('public'));
+
+// Setup Swagger documentation
+app.use(`${path}/api-docs`, swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // ruta de acceso de info de usuario, implica leer, actualizar y registra usuario
 // Ruta actualmente con todas sus subrutas protegidas, pero % de cambio a futuro

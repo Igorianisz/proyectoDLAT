@@ -10,3 +10,11 @@ export interface IUser {
     role: EnumUserRole;
     is_active: boolean;
 }
+
+export interface ICreateUser {
+    name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    role?: EnumUserRole;
+}

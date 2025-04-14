@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 import { authService } from '../services/auth.service';
-import { userService } from '../services/user.service';
-import { HttpError } from '../utils/error/httpError.utils';
 
 const loginByPassword = async (
     req: Request,
@@ -24,14 +22,14 @@ const registerByPassword = async (
 ) => {
     try {
         const { name, last_name, email, password, role } = req.body;
-        const newUsers = await authService.registerUserByPassword(
+        const token = await authService.registerUserByPassword(
             name,
             last_name,
             email,
             password,
             role,
         );
-        res.status(201).json({ newUsers });
+        res.status(201).json({ token });
     } catch (error) {
         next(error);
     }

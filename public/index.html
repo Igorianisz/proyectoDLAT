@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Desafío LATAM</title>
+        <script src="/socket.io/socket.io.js"></script>
+        <link rel="stylesheet" href="styles.css" />
+    </head>
+    <body>
+        <div id="loginContainer" class="active">
+            <h2 id="formTitle">Login</h2>
+            <input
+                id="nameUser"
+                class="formInput"
+                type="text"
+                placeholder="Username"
+                style="display: none"
+            />
+            <input
+                id="lastNameUser"
+                class="formInput"
+                type="text"
+                placeholder="Lastname"
+                style="display: none"
+            />
+            <input
+                id="emailUser"
+                class="formInput"
+                type="text"
+                placeholder="Email"
+            />
+            <input
+                id="passwordUser"
+                class="formInput"
+                type="password"
+                placeholder="Password"
+            />
+            <button id="loginButton">Login</button>
+            <button id="registerButton" style="display: none">Register</button>
+            <button id="toggleFormButton">Switch to Register</button>
+        </div>
+
+        <div id="chatContainer" style="display: none">
+            <div>
+                <div
+                    style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    "
+                >
+                    <h2>
+                        Chat
+                        <span id="chatRoomName">No Room</span>
+                    </h2>
+                    <button id="logoutButton" style="width: 80px">
+                        Logout
+                    </button>
+                </div>
+                <div>
+                    Chat list
+                    <select id="roomsList">
+                        <option value="" selected disabled>
+                            Select a room
+                        </option>
+                        <option value="room1">room1</option>
+                        <option value="room2">room2</option>
+                        <option value="room3">room3</option>
+                    </select>
+                </div>
+            </div>
+            <div id="chatMessages" style="display: none">
+                <ul id="users"></ul>
+                <ul id="messages"></ul>
+                <input
+                    id="messageInput"
+                    type="text"
+                    placeholder="Type a message..."
+                />
+                <button id="sendButton">Send</button>
+                <h3 id="userOnCurrentChat">Logged users:</h3>
+            </div>
+        </div>
+
+        <script src="app.js"></script>
+    </body>
+</html>

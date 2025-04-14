@@ -1,6 +1,6 @@
 import { EnumStatus } from './status.interface';
 
-export interface IProjects {
+export interface IProject {
     id: string;
     name: string;
     description: string;

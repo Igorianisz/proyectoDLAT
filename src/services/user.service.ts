@@ -1,32 +1,33 @@
-import { userModel } from '../models/user.model';
-
 import bcrypt from 'bcrypt';
 import { EnumUserRole } from '../interfaces/role.interface';
 import { HttpError } from '../utils/error/httpError.utils';
 import { validate } from 'uuid';
 import { uuidValidator } from '../utils/error/uuidValidator.utils';
+import { User } from '../models/user.model';
+import { IUser } from '../interfaces/user.interface';
 
 const getAllUsers = async () => {
-    const users = await userModel.readUsers();
+    const users = await User.findAll({
+        attributes: { exclude: ['password'] },
+    });
     return users;
 };
 
 const getUserById = async (userId: string) => {
     uuidValidator('User', userId);
-    const userById = await userModel.getUserById(userId);
-    console.log(userById);
+    const userById = await User.findByPk(userId);
     if (!userById) {
         throw new HttpError(`User not found by id ${userId}`, 404);
     }
-    return userById;
+    return userById.toJSON();
 };
 
 const getUserByEmail = async (userEmail: string) => {
-    const userByEmail = await userModel.getUserByEmail(userEmail);
+    const userByEmail = await User.findOne({ where: { email: userEmail } });
     if (!userByEmail) {
         throw new HttpError(`User not found by email ${userByEmail}`, 404);
     }
-    return userByEmail;
+    return userByEmail.toJSON();
 };
 
 // TODO:  crear login con cuentas de google y microsoft, agregar otros a futuro como facebook quizas
@@ -40,29 +41,30 @@ const createUserWithEmailPassword = async (
     password: string,
     role: EnumUserRole = EnumUserRole.Dev,
 ) => {
-    // validaciones de nombre/apellido/ y otros es de front
+    // Encriptación de la contraseña
+    const salt = await bcrypt.genSalt(10);
+    const passwordHashed = await bcrypt.hash(password, salt);
 
-    const findUserByEmail = await userModel.getUserByEmail(email);
+    const [user, created] = await User.findOrCreate({
+        where: { email },
+        defaults: {
+            name,
+            last_name,
+            email,
+            password: passwordHashed,
+            role,
+        } as IUser,
+    });
 
-    if (findUserByEmail) {
+    console.log(user, created);
+
+    if (!created) {
         throw new HttpError(
             `The current email ${email} is already on use.`,
             409,
         );
     }
-
-    // Encriptación de la contraseña
-    const salt = await bcrypt.genSalt(10);
-    const passwordHashed = await bcrypt.hash(password, salt);
-
-    const newUser = await userModel.createUser(
-        name,
-        last_name,
-        email,
-        passwordHashed,
-        role,
-    );
-    return newUser;
+    return user;
 };
 
 const updateUserData = async (
@@ -88,7 +90,7 @@ const updateUserData = async (
     if (last_name) updatedUser.last_name = last_name;
     if (role) updatedUser.role = role;
     if (email) {
-        const getUserByEmail = await userModel.getUserByEmail(email);
+        const getUserByEmail = await User.findOne({ where: { email } });
         if (getUserByEmail) {
             throw new HttpError(
                 `The current email ${email} is already on use.`,
@@ -100,6 +102,7 @@ const updateUserData = async (
     }
     if (password) {
         const salt = await bcrypt.genSalt(10);
+        console.log('entra a ver', password, salt, findUserById);
         const passwordHashed = await bcrypt.hash(password, salt);
         const samePassword = await bcrypt.compare(
             password,
@@ -112,13 +115,7 @@ const updateUserData = async (
         }
     }
 
-    await userModel.updateUserById(id, [
-        updatedUser.name,
-        updatedUser.last_name,
-        updatedUser.email,
-        updatedUser.password,
-        updatedUser.role,
-    ]);
+    await User.update(updatedUser, { where: { id } });
 };
 
 const deleteUser = async (id: string) => {
@@ -129,19 +126,19 @@ const deleteUser = async (id: string) => {
     if (!findUserById) {
         throw new HttpError(`No user found, can't delete`, 404);
     }
-    await userModel.deleteUserById(id);
+    await User.destroy({ where: { id } });
 };
 
-const toggleUserActive = async (id: string, is_active: boolean) => {
-    uuidValidator('User', id);
-    const findUserById = await getUserById(id);
+// const toggleUserActive = async (id: string, is_active: boolean) => {
+//     uuidValidator('User', id);
+//     const findUserById = await getUserById(id);
 
-    if (!findUserById) {
-        throw new HttpError(`No user found`, 404);
-    }
+//     if (!findUserById) {
+//         throw new HttpError(`No user found`, 404);
+//     }
 
-    await userModel.toggleActiveById(id, is_active);
-};
+//     await User.update({ is_active }, { where: { id } });
+// };
 
 export const userService = {
     getAllUsers,
@@ -150,5 +147,5 @@ export const userService = {
     updateUserData,
     getUserByEmail,
     deleteUser,
-    toggleUserActive,
+    // toggleUserActive,
 };

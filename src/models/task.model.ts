@@ -1,4 +1,5 @@
-import { IProject } from '../interfaces/project.interface';
+import { EnumStatus } from '../interfaces/status.interface';
+import { ITask } from '../interfaces/task.interface';
 import {
     AllowNull,
     BelongsTo,
@@ -8,18 +9,19 @@ import {
     DataType,
     Default,
     ForeignKey,
-    HasMany,
+    IsEmail,
     IsUUID,
     Model,
     PrimaryKey,
     Table,
+    Unique,
 } from 'sequelize-typescript';
-import { EnumStatus } from '../interfaces/status.interface';
 import { User } from './user.model';
-import { Task } from './task.model';
-import { UserProject } from './userProject.model';
+import { Project } from './project.model';
+import { UserTask } from './userTask.model';
+
 @Table
-export class Project extends Model<IProject> {
+export class Task extends Model<ITask> {
     @PrimaryKey
     @AllowNull(false)
     @IsUUID(4)
@@ -53,17 +55,22 @@ export class Project extends Model<IProject> {
     @Column(DataType.ENUM(...Object.values(EnumStatus)))
     status!: EnumStatus;
 
+    @ForeignKey(() => Project)
+    @AllowNull(false)
+    @Column(DataType.UUID)
+    project_id!: string;
+
     @ForeignKey(() => User)
     @AllowNull(false)
     @Column(DataType.UUID)
     created_by!: string;
 
+    @BelongsTo(() => Project, { foreignKey: 'project_id' })
+    project!: Project;
+
     @BelongsTo(() => User, { foreignKey: 'created_by' })
     user!: User;
 
-    @HasMany(() => Task, { foreignKey: 'project_id' })
-    tasks!: Task[];
-
-    @BelongsToMany(() => User, () => UserProject, 'project_id')
+    @BelongsToMany(() => User, () => UserTask, 'task_id')
     users!: User[];
 }

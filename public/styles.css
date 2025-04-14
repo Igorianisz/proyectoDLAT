@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+}
+
+#loginContainer, #chatContainer {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);  
+    width: 200px;
+}
+
+#loginContainer.active, #chatContainer.active {
+    display: flex;
+}
+
+#chatContainer {
+    width: 600px; /* Ancho más grande para el chat */
+}
+
+input, button, select {
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 100%;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#messages, #users {
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    max-width: 400px;
+    margin: 20px 0;
+    overflow-y: auto;
+    max-height: 300px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #fff;
+}
+
+#messages > li, #users > li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+#messages > li:nth-child(odd), #users > li:nth-child(odd) {
+    background: #f9f9f9;
+}
+
+#loginContainer .formInput {
+    width: 90%;
+}
+
+.previous-message {
+    color: gray;
+    font-style: italic;
+}
