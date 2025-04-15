@@ -1,40 +1,116 @@
-# Proyecto DesafioLatam - Express
+# Sistema de Gestión de Proyectos
 
-> -   Se agrego validacion del req.body con joi
-> -   borrado de import innecesarios
+## Descripción General
 
-TODO:
+Esta aplicación es un sistema completo de gestión de proyectos construido con Node.js, Express, TypeScript y PostgreSQL. Permite a las organizaciones gestionar proyectos, usuarios y tareas de manera eficiente con funcionalidades de colaboración en tiempo real.
 
--   Pasar encriptación a la DB
--   seteo login con microsoft/google/otros auths
+### Características Principales
+
+-   **Autenticación de Usuarios**: Registro e inicio de sesión seguros con JWT.
+-   **Control de Acceso Basado en Roles**: Diferentes niveles de permisos para roles de Administrador, Gestor de Proyectos, Desarrollador y Cliente.
+-   **Gestión de Proyectos**: Crear, actualizar, asignar y seguir proyectos con diferentes indicadores de estado.
+-   **Chat en Tiempo Real**: Sistema de chat integrado para comunicación en equipo con salas de chat.
+-   **API RESTful**: Endpoints de API bien documentados con Swagger.
+-   **Base de Datos Dockerizada**: Configuración sencilla de PostgreSQL con Docker.
+
+### TODO
+
+-   Implementar encriptación directamente en la base de datos.
+-   Configurar autenticación con **Microsoft**, **Google** u otros sistemas.
+-   Ampliar funcionalidades para proyectos personales.
 
 ## Uso
 
-Para levantar la DB en docker
+## Requisitos Previos
+
+Antes de comenzar, asegúrate de tener instalados los siguientes requisitos:
+
+-   **Node.js** (v16 o superior)
+-   **Docker** y **Docker Compose**
+-   **npm** o **yarn**
+
+## Pasos para Configuración y Ejecución
+
+### 1. Levantar la Base de Datos con Docker
+
+Ejecuta el siguiente comando para iniciar la base de datos utilizando Docker Compose:
 
 ```bash
 docker-compose up
 ```
 
-Para iniciar el servidor, ejecuta:
+### 2. Configurar Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto y configura las variables necesarias. Puedes usar el archivo `.env.example` como referencia.
+
+```bash
+PORT = 3005
+SECRET_KEY_JWT= "AXXXAf/14ACX"
+DATABASE_URL = "postgresql://postgres:root@localhost:5434/dbtest"
+MAIN_PATH = "/api/v1"
+```
+
+### 3. Instalar Dependencias
+
+Instala las dependencias del proyecto ejecutando:
+
+```bash
+npm install
+```
+
+o si prefieres yarn:
+
+```bash
+yarn install
+```
+
+### 4. Levantar Docker localmente
+
+```bash
+docker-compose up
+```
+
+### 5. Iniciar el Servidor
+
+Para iniciar el servidor en modo desarrollo, ejecuta:
 
 ```bash
 npm run dev
 ```
 
-Para ejecutar los test respectivos
+o con yarn:
+
+```bash
+yarn dev
+```
+
+El servidor estará disponible en `http://localhost:3000` por defecto. Puedes cambiar el puerto configurando la variable `PORT` en el archivo `.env`.
+
+### 6. Ejecutar Pruebas
+
+Para ejecutar las pruebas del proyecto, utiliza:
 
 ```bash
 npm run test
 ```
 
-Para revisar la info Swagger, ir a
-`/api/v1/api-docs/`
+o con yarn:
 
-El servidor estará disponible en `http://localhost:3000` por default,
-Puerto configurable según .env PORT
+```bash
+yarn test
+```
 
-CONSIDERAR QUE EL JTW UTILIZADO TIENE UN TIEMPO DE EXPIRACIÓN DEFAULT DE 2 HORAS PARA TESTEO. CONSIDERAR AJUSTARLO EN LOS LLAMADOS DE LA FUNCIÓN `generateToken` o en la definición de la misma en token.utils.ts
+### 7. Documentación de la API
+
+Para revisar la documentación de la API generada con Swagger, accede a:
+
+```
+http://localhost:3000/api/v1/api-docs/
+```
+
+### Nota Importante
+
+El token JWT utilizado tiene un tiempo de expiración predeterminado de 2 horas para propósitos de prueba. Si necesitas ajustarlo, modifica los parámetros en la función `generateToken` ubicada en `token.utils.ts`.
 
 # DIAGRAMA DE DB
 
@@ -42,7 +118,7 @@ CONSIDERAR QUE EL JTW UTILIZADO TIENE UN TIEMPO DE EXPIRACIÓN DEFAULT DE 2 HORA
 
 ![Diagrama de la Base de Datos](./diagramaDB.svg)
 
-# Rutas
+# Endpoints de la API
 
 El proyecto tiene configurado Swagger, por lo que es posible visualizar y testear las rutas en ese lugar. Se cuenta con 3 rutas.
 
@@ -276,6 +352,7 @@ El path base se puede setear en el .env, pero por default se considera como refe
     ```
 -   **Autenticación Requerida**: Sí (JWT)
 -   **Retorna**: Objeto de proyecto actualizado
+
     ```json
     {
         "updatedProject": {
@@ -291,3 +368,9 @@ El path base se puede setear en el .env, pero por default se considera como refe
         }
     }
     ```
+
+    ***
+
+    ## Créditos
+
+    Este proyecto fue desarrollado como parte de un desafío de **Desafío Latam**.
